@@ -10,6 +10,44 @@
 - **Narasi Presentasi (Speaker Notes)**: 
   "Selamat pagi Bapak/Ibu sekalian. Hari ini saya mempresentasikan purwarupa SC-DATA (Smart Campus Data). Sistem ini dirancang bukan sekadar sebagai SIAKAD biasa, melainkan sebagai fondasi digital atau *Command System* terpadu. Mulai dari manajemen data master, otomatisasi ETL, hingga integrasi kecerdasan buatan, semuanya dibalut dalam satu antarmuka premium berkinerja tinggi. Mari kita lihat arsitektur dan fitur fungsional yang sudah sepenuhnya diimplementasikan."
 
+- **Peta Ekosistem Fitur SC-DATA (Mindmap)**:
+  ```mermaid
+  mindmap
+    root((SC-DATA V16\nSuper App))
+      (1. Infrastruktur Data & AI)
+        ::icon(fas fa-server)
+        Data Pipeline ETL
+        AI RAG Search Engine
+        Real-Time Event Monitor
+        Audit Trail & Security RBAC
+        Self-Validation System
+      (2. Layanan Akademik)
+        ::icon(fas fa-graduation-cap)
+        Dasbor KRS & SKS
+        Jadwal Kuliah Time-Block
+        Jadwal & Pengawas Ujian
+        Auto-Gen Kartu Ujian PDF
+        Auto-Gen Surat Keterangan
+      (3. Finansial & Fasilitas)
+        ::icon(fas fa-building)
+        Tagihan SPP / UKT
+        Metode Pembayaran
+        E-Library & Jurnal
+        Stok Buku Fisik
+      (4. Akselerasi Karir)
+        ::icon(fas fa-briefcase)
+        Manajemen PKL / Magang
+        Tracking Skripsi
+        Bursa Beasiswa
+        Tracer Study Alumni
+      (5. Ekosistem Sosial)
+        ::icon(fas fa-users)
+        Forum Diskusi Kuliah
+        Helpdesk & Ticketing
+        Pusat Notifikasi
+        Profil UKM & Organisasi
+  ```
+
 ## Slide 2: Arsitektur Utama (FastAPI + DuckDB)
 - **Judul Slide**: Arsitektur Berbasis Performa & Kinerja Tinggi
 - **Penjelasan Fitur & Poin Utama**:
@@ -19,29 +57,38 @@
   - Frontend dibangun dari nol dengan Vanilla JS modular dan CSS custom (glassmorphism), memberikan fleksibilitas penuh tanpa batasan framework.
 - **Diagram Arsitektur (Mermaid)**:
   ```mermaid
-  graph TD
-      subgraph Frontend ["Presentation Layer (Browser)"]
-          UI["HTML5 + CSS3 (Glassmorphism)"]
-          JS["Vanilla JS (app.js, features.js)"]
-          UI --- JS
+  flowchart TD
+      %% Styling
+      classDef layer1 fill:#1e1e2e,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4
+      classDef layer2 fill:#11111b,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4
+      classDef layer3 fill:#181825,stroke:#f9e2af,stroke-width:2px,color:#cdd6f4
+
+      subgraph TIER1 [1. TIER PRESENTASI / FRONTEND LAYER]
+          direction TB
+          UI["Visual UI<br>(HTML5 + CSS Glassmorphism)"]:::layer1
+          Logic["Client Logic<br>(Vanilla JavaScript)"]:::layer1
       end
 
-      subgraph Backend ["Application Layer (Python)"]
-          API["FastAPI App"]
-          Auth["RBAC & Security"]
-          Routes["API Endpoints (/api/*)"]
-          API --- Auth
-          API --- Routes
+      subgraph TIER2 [2. TIER APLIKASI / LOGIC LAYER]
+          direction TB
+          Gateway["API Gateway<br>(FastAPI Router)"]:::layer2
+          Business["Business Logic & AI<br>(Pipeline, RAG Engine, Auth)"]:::layer2
       end
 
-      subgraph DataLayer ["Data Layer (Local)"]
-          DuckDB[("DuckDB (In-Process)")]
-          Files["CSV Data & TXT Docs"]
+      subgraph TIER3 [3. TIER DATA / STORAGE LAYER]
+          direction TB
+          Engine[("Database Engine<br>(DuckDB In-Process)")]:::layer3
+          Raw["Raw Data Storage<br>(CSV & TXT Files)"]:::layer3
       end
 
-      JS -- "HTTP REST (JSON/Fetch API)" --> API
-      Routes -- "SQL Queries (duckdb.py)" --> DuckDB
-      DuckDB -. "Load Data" .-> Files
+      %% Hubungan antar Layer
+      TIER1 -->|"HTTP REST (JSON/Fetch)"| TIER2
+      TIER2 -->|"Kueri SQL & File I/O"| TIER3
+
+      %% Penjelasan batas
+      style TIER1 fill:none,stroke:#89b4fa,stroke-width:2px,stroke-dasharray: 5 5
+      style TIER2 fill:none,stroke:#a6e3a1,stroke-width:2px,stroke-dasharray: 5 5
+      style TIER3 fill:none,stroke:#f9e2af,stroke-width:2px,stroke-dasharray: 5 5
   ```
 - **Rekomendasi Visual/Artefak**: Tangkapan layar endpoint `/api/health` atau halaman "System Pulse" di *sidebar*, disandingkan dengan diagram arsitektur di atas.
 - **Narasi Presentasi (Speaker Notes)**: 

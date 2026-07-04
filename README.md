@@ -65,8 +65,8 @@ flowchart TD
         Raw["Raw Data (CSV & TXT)"]
     end
 
-    UI <==>|HTTP REST (JSON)| Gateway
-    Gateway <==>|SQL Queries| Engine
+    UI <-->|HTTP REST (JSON)| Gateway
+    Gateway <-->|SQL Queries| Engine
 ```
 
 ---
