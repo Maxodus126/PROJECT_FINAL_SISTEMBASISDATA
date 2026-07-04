@@ -1,0 +1,389 @@
+{
+  "generatedAt": "2026-07-01T05:11:06.827Z",
+  "role": "Mahasiswa",
+  "user": {
+    "username": "mahasiswa",
+    "password": "mhs123",
+    "name": "Aflin Awaludin",
+    "code": "24360007",
+    "role": "Mahasiswa",
+    "avatar": "AA"
+  },
+  "students": [
+    {
+      "nim": "24360001",
+      "name": "Muhammad Sechan Auriel",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.74,
+      "attendance": 92,
+      "risk": "Rendah",
+      "status": "Aktif"
+    },
+    {
+      "nim": "24360002",
+      "name": "Putri Nurhaliza",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.82,
+      "attendance": 95,
+      "risk": "Rendah",
+      "status": "Aktif"
+    },
+    {
+      "nim": "24364001",
+      "name": "Dosma Silitonga",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.41,
+      "attendance": 84,
+      "risk": "Sedang",
+      "status": "Aktif"
+    },
+    {
+      "nim": "24360005",
+      "name": "Fathurahman Al Faqih",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.56,
+      "attendance": 88,
+      "risk": "Rendah",
+      "status": "Aktif"
+    },
+    {
+      "nim": "24360004",
+      "name": "Fadil Ardiansyah",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.36,
+      "attendance": 78,
+      "risk": "Sedang",
+      "status": "Aktif"
+    },
+    {
+      "nim": "24360008",
+      "name": "Dito Bima Ramadhan",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.22,
+      "attendance": 74,
+      "risk": "Tinggi",
+      "status": "Aktif"
+    },
+    {
+      "nim": "24360006",
+      "name": "Nabila Latifatul Hamdah",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.91,
+      "attendance": 97,
+      "risk": "Rendah",
+      "status": "Aktif"
+    },
+    {
+      "nim": "24360003",
+      "name": "Raffli Islami Fashya",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.49,
+      "attendance": 86,
+      "risk": "Sedang",
+      "status": "Aktif"
+    },
+    {
+      "nim": "24360009",
+      "name": "Adriano Michael Silaen",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.67,
+      "attendance": 90,
+      "risk": "Rendah",
+      "status": "Aktif"
+    },
+    {
+      "nim": "24360007",
+      "name": "Aflin Awaludin",
+      "prodi": "Teknik Informatika",
+      "semester": 2,
+      "ipk": 3.88,
+      "attendance": 94,
+      "risk": "Rendah",
+      "status": "Aktif"
+    }
+  ],
+  "lecturers": [
+    {
+      "id": "D001",
+      "name": "Oni Bibin Bintoro, Ing., Dipl.-Sci., MBA, MBI.",
+      "nidn": "SC-DATA-001",
+      "prodi": "Sistem Informasi",
+      "email": "oni.bibin@istn.ac.id",
+      "status": "Aktif"
+    },
+    {
+      "id": "D002",
+      "name": "Ir. ANDI SUPRIANTO, M.Kom.",
+      "nidn": "0312048801",
+      "prodi": "Arsitektur",
+      "email": "andi.suprianto@istn.ac.id",
+      "status": "Aktif"
+    },
+    {
+      "id": "D003",
+      "name": "MARHAENI, S.Kom., M.Kom.",
+      "nidn": "0320119002",
+      "prodi": "Teknik Informatika",
+      "email": "marhaeni@istn.ac.id",
+      "status": "Aktif"
+    },
+    {
+      "id": "D004",
+      "name": "B. SUMARDIYONO, ST., M.Kom.",
+      "nidn": "0308098803",
+      "prodi": "Teknik Informatika",
+      "email": "b.sumardiyono@istn.ac.id",
+      "status": "Aktif"
+    },
+    {
+      "id": "D005",
+      "name": "Dikky Suryadi, S.Kom., M.Kom.",
+      "nidn": "0317059104",
+      "prodi": "Teknik Informatika",
+      "email": "dikky.suryadi@istn.ac.id",
+      "status": "Aktif"
+    },
+    {
+      "id": "D006",
+      "name": "Moch. Zhuhriansyah Rahman, ST., MT.",
+      "nidn": "0307108906",
+      "prodi": "Teknik Informatika",
+      "email": "zhuhriansyah@istn.ac.id",
+      "status": "Aktif"
+    }
+  ],
+  "courses": [
+    {
+      "id": "ai",
+      "code": "AIAR01",
+      "title": "Pengantar Kecerdasan Buatan (A)",
+      "program": "Arsitektur",
+      "sks": 3,
+      "lecturer": "Ir. ANDI SUPRIANTO, M.Kom. dan 1 lainnya",
+      "day": "Kamis",
+      "start": "08:00",
+      "end": "09:30",
+      "room": "A-201",
+      "method": "Case Method",
+      "progress": 50,
+      "attended": 8,
+      "total": 16,
+      "health": 75,
+      "status": "Aktif",
+      "material": "Konsep dasar kecerdasan buatan, perkembangan AI, agent, search, reasoning, dan studi kasus akademik"
+    },
+    {
+      "id": "algo",
+      "code": "IF-ALG302",
+      "title": "Ilmu Komputer Teoretis & Algoritma Lanjutan (A)",
+      "program": "Teknik Informatika",
+      "sks": 3,
+      "lecturer": "MARHAENI, S.Kom., M.Kom. dan 1 lainnya",
+      "day": "Rabu",
+      "start": "13:00",
+      "end": "16:00",
+      "room": "B-105",
+      "method": "Project Based Learning • Case Method",
+      "progress": 93,
+      "attended": 15,
+      "total": 16,
+      "health": 93,
+      "status": "Aktif",
+      "material": "Teori komputasi, struktur algoritma lanjutan, kompleksitas, optimasi, dan pemecahan masalah"
+    },
+    {
+      "id": "cloud",
+      "code": "IF-CLD402",
+      "title": "Infrastruktur Cloud dan Sistem Terdistribusi (A)",
+      "program": "Teknik Informatika",
+      "sks": 3,
+      "lecturer": "B. SUMARDIYONO, ST., M.Kom. dan 1 lainnya",
+      "day": "Rabu",
+      "start": "09:00",
+      "end": "12:00",
+      "room": "D-307",
+      "method": "Project Based Learning • Case Method",
+      "progress": 12,
+      "attended": 2,
+      "total": 16,
+      "health": 58,
+      "status": "Kritis",
+      "material": "Cloud architecture, container, orchestration, distributed service, dan perancangan sistem terdistribusi"
+    },
+    {
+      "id": "osnet",
+      "code": "IF-OSN401",
+      "title": "Sistem Operasi Lanjutan & Arsitektur Jaringan (A)",
+      "program": "Teknik Informatika",
+      "sks": 3,
+      "lecturer": "Dikky Suryadi, S.Kom., M.Kom.",
+      "day": "Selasa",
+      "start": "13:00",
+      "end": "16:00",
+      "room": "C-303",
+      "method": "Project Based Learning • Case Method",
+      "progress": 37,
+      "attended": 6,
+      "total": 16,
+      "health": 66,
+      "status": "Perlu Perhatian",
+      "material": "Kernel, concurrency, memory management, arsitektur jaringan, dan protokol komunikasi"
+    },
+    {
+      "id": "vision",
+      "code": "IF-DL501",
+      "title": "Pembelajaran Mendalam Terapan untuk Visi Komputer di Awan (A)",
+      "program": "Teknik Informatika",
+      "sks": 3,
+      "lecturer": "Moch. Zhuhriansyah Rahman, ST., MT.",
+      "day": "Selasa",
+      "start": "09:00",
+      "end": "11:10",
+      "room": "Lab AI-1",
+      "method": "Jenis kelas tidak tersedia",
+      "progress": 0,
+      "attended": 0,
+      "total": 16,
+      "health": 40,
+      "status": "Belum Aktif",
+      "material": "Deep learning, computer vision, GPU cloud, model deployment, dan evaluasi performa visual model"
+    },
+    {
+      "id": "genai",
+      "code": "IF-NLP502",
+      "title": "Pembelajaran Mesin untuk Teks dan AI Generatif (A)",
+      "program": "Teknik Informatika",
+      "sks": 3,
+      "lecturer": "B. SUMARDIYONO, ST., M.Kom. dan 1 lainnya",
+      "day": "Senin",
+      "start": "13:00",
+      "end": "16:00",
+      "room": "Lab Data-2",
+      "method": "Jenis kelas tidak tersedia",
+      "progress": 0,
+      "attended": 0,
+      "total": 16,
+      "health": 42,
+      "status": "Belum Aktif",
+      "material": "NLP, transformer, prompt engineering, RAG, generative AI, dan evaluasi model bahasa"
+    },
+    {
+      "id": "sbdm",
+      "code": "SBDM01",
+      "title": "Sistem Basis Data Modern dan Arsitektur Data Siap-AI (A)",
+      "program": "Sistem Informasi",
+      "sks": 3,
+      "lecturer": "Oni Bibin Bintoro, Ing., Dipl.-Sci., MBA, MBI.",
+      "day": "Senin",
+      "start": "09:00",
+      "end": "12:00",
+      "room": "A-110",
+      "method": "Jenis kelas tidak tersedia",
+      "progress": 0,
+      "attended": 0,
+      "total": 16,
+      "health": 50,
+      "status": "Belum Aktif",
+      "material": "Modern DBMS, data pipeline, RAG, governance, deployment decision, dan arsitektur data siap AI"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T001",
+      "courseId": "sbdm",
+      "title": "Laporan SC-DATA Modul 14",
+      "type": "Laporan",
+      "deadline": "24 Juni 2026, 23:59",
+      "status": "Belum dikumpulkan",
+      "score": null,
+      "instruction": "Susun blueprint arsitektur data siap AI secara lengkap."
+    },
+    {
+      "id": "T002",
+      "courseId": "ai",
+      "title": "Tugas Studi Kasus AI Agent",
+      "type": "Tugas",
+      "deadline": "25 Juni 2026, 23:59",
+      "status": "Belum dikumpulkan",
+      "score": null,
+      "instruction": "Analisis agent, environment, action, dan performance measure pada kasus akademik."
+    },
+    {
+      "id": "T003",
+      "courseId": "algo",
+      "title": "Kuis Kompleksitas Algoritma",
+      "type": "Kuis",
+      "deadline": "26 Juni 2026, 21:00",
+      "status": "Selesai",
+      "score": 88,
+      "instruction": "Kerjakan kuis analisis kompleksitas dan notasi Big-O."
+    },
+    {
+      "id": "T004",
+      "courseId": "cloud",
+      "title": "Desain Arsitektur Sistem Terdistribusi",
+      "type": "Proyek",
+      "deadline": "29 Juni 2026, 23:59",
+      "status": "Belum dikumpulkan",
+      "score": null,
+      "instruction": "Buat diagram service, database, gateway, dan deployment."
+    }
+  ],
+  "events": [
+    {
+      "id": "E001",
+      "title": "Kuliah Sistem Basis Data Modern dan Arsitektur Data Siap-AI",
+      "date": "2026-06-22",
+      "time": "09:00",
+      "type": "Kuliah"
+    },
+    {
+      "id": "E002",
+      "title": "Pengantar Kecerdasan Buatan",
+      "date": "2026-06-25",
+      "time": "08:00",
+      "type": "Kuliah"
+    },
+    {
+      "id": "E003",
+      "title": "Ilmu Komputer Teoretis & Algoritma Lanjutan",
+      "date": "2026-06-24",
+      "time": "13:00",
+      "type": "Kuliah"
+    },
+    {
+      "id": "E004",
+      "title": "Rapat Evaluasi Presensi Kelas",
+      "date": "2026-06-25",
+      "time": "13:30",
+      "type": "Rapat"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "LOGMR1M9DLHN8LQ",
+      "action": "Export PDF",
+      "detail": "Disimpan sebagai document_1782882588264.pdf",
+      "role": "Mahasiswa",
+      "user": "Aflin Awaludin",
+      "time": "1/7/2026, 12.09.48"
+    },
+    {
+      "id": "LOGMR1M8P12P4X4",
+      "action": "Login",
+      "detail": "Aflin Awaludin sebagai Mahasiswa",
+      "role": "Mahasiswa",
+      "user": "Aflin Awaludin",
+      "time": "1/7/2026, 12.09.16"
+    }
+  ]
+}

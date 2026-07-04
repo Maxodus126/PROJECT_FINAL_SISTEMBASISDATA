@@ -5,13 +5,17 @@ from datetime import datetime
 from pathlib import Path
 import shutil
 import re
+import math
+import base64
 from typing import Any
 
 import duckdb
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 
 from .db import (
@@ -30,8 +34,8 @@ from .db import (
 from .init_db import init_database
 
 APP_VERSION = "2.0.0-powerful"
-DATA_DIR = PROJECT_ROOT / "data"
-DOCS_DIR = PROJECT_ROOT / "docs"
+DATA_DIR = PROJECT_ROOT / "data" / "csv"
+DOCS_DIR = PROJECT_ROOT / "docs" / "rag"
 VALID_STATUS = {"hadir", "izin", "sakit", "alfa"}
 
 app = FastAPI(
@@ -43,10 +47,96 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+security = HTTPBearer()
+
+
+def error_response(status_code: int, error_code: str, message: str, details: Any | None = None) -> JSONResponse:
+    return JSONResponse(
+        status_code=status_code,
+        content={
+            "error_code": error_code,
+            "message": message,
+            "details": details,
+        },
+    )
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    detail = exc.detail
+    message = detail if isinstance(detail, str) else "Permintaan tidak dapat diproses."
+    details = None if isinstance(detail, str) else detail
+    try:
+        if exc.status_code >= 400:
+            log_audit("System", "HTTP_EXCEPTION", f"{request.method} {request.url.path}", "FAILED", {"status_code": exc.status_code, "detail": detail})
+    except Exception:
+        pass
+    return error_response(exc.status_code, f"HTTP_{exc.status_code}", message, details)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    details = []
+    for err in exc.errors():
+        details.append({
+            "field": ".".join(str(x) for x in err.get("loc", [])),
+            "message": err.get("msg", "Invalid value"),
+            "type": err.get("type", "validation_error"),
+        })
+    try:
+        log_audit("System", "VALIDATION_ERROR", f"{request.method} {request.url.path}", "FAILED", {"errors": details[:20]})
+    except Exception:
+        pass
+    return error_response(422, "VALIDATION_ERROR", "Validasi request gagal. Periksa field input Anda.", details)
+
+
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+    try:
+        decoded = base64.b64decode(token).decode("utf-8")
+        role, username = decoded.split(":", 1)
+        return {"role": role, "username": username}
+    except Exception:
+        try:
+            log_audit("System", "AUTH_INVALID_TOKEN", "Token tidak valid", "FAILED")
+        except Exception:
+            pass
+        raise HTTPException(status_code=401, detail="Token tidak valid. Silakan login ulang.")
+
+
+def require_admin(user: dict[str, Any] = Depends(get_current_user)) -> dict[str, Any]:
+    if str(user.get("role", "")).strip() != "Administrator":
+        # ponytail: known ceiling - RBAC check minimalis
+        raise HTTPException(status_code=403, detail="Akses ditolak. Memerlukan role Administrator.")
+    return user
+
+
+def actor_role(payload_role: str | None, user: dict[str, Any] | None) -> str:
+    # Sumber kebenaran role harus dari token user; payload hanya fallback agar kompatibel.
+    token_role = str((user or {}).get("role", "")).strip()
+    if token_role:
+        return token_role
+    return str(payload_role or "System").strip() or "System"
+
+class LoginRequest(BaseModel):
+    role: str
+    username: str
+
+@app.post("/api/auth/login")
+def auth_login(payload: LoginRequest):
+    token = base64.b64encode(f"{payload.role}:{payload.username}".encode()).decode("utf-8")
+    return {"token": token, "message": "Login successful"}
+
+
+@app.get("/api/auth/validate")
+def auth_validate(user: dict[str, Any] = Depends(get_current_user)):
+    return {"status": "valid", "user": user, "message": "Token valid"}
+
 
 
 class LoadEventRequest(BaseModel):
@@ -252,7 +342,7 @@ def dashboard_summary() -> dict[str, Any]:
 
 
 @app.post("/api/events/load")
-def load_events(payload: LoadEventRequest) -> dict[str, Any]:
+def load_events(payload: LoadEventRequest, user: dict[str, Any] = Depends(require_admin)) -> dict[str, Any]:
     batch_size = max(1, min(int(payload.batch_size), 50))
     event_path = DATA_DIR / "kehadiran_event.csv"
     require_file(event_path)
@@ -275,6 +365,7 @@ def load_events(payload: LoadEventRequest) -> dict[str, Any]:
     con = get_connection()
     loaded = 0
     skipped = 0
+    total_event_log = 0
     try:
         existing = {row[0] for row in con.execute("SELECT event_id FROM event_log").fetchall()}
         new_df = df[~df["event_id"].isin(existing)].head(batch_size).copy()
@@ -288,18 +379,23 @@ def load_events(payload: LoadEventRequest) -> dict[str, Any]:
                 [new_id("EVLOG"), row["event_id"], row["nim"], row["kode_mk"], row["waktu_event"].to_pydatetime(), row["status_hadir"], "kehadiran_event.csv", datetime.now()],
             )
             loaded += 1
-        total_event_log = int(con.execute("SELECT COUNT(*) FROM event_log").fetchone()[0])
-        log_audit(payload.role, "LOAD_EVENT", f"{loaded} event baru dimuat ke event_log", "SUCCESS", {"loaded": loaded, "total_event_log": total_event_log})
+        total_row = con.execute("SELECT COUNT(*) FROM event_log").fetchone()
+        total_event_log = int(total_row[0]) if total_row else 0
         return {"status": "success", "loaded": loaded, "skipped_existing_or_over_batch": skipped, "total_event_log": total_event_log, "message": f"{loaded} event baru berhasil dimuat ke DuckDB"}
     finally:
         con.close()
+        try:
+            log_audit(actor_role(payload.role, user), "LOAD_EVENT", f"{loaded} event baru dimuat ke event_log", "SUCCESS", {"loaded": loaded, "total_event_log": total_event_log, "skipped": skipped})
+        except Exception:
+            pass
 
 
 @app.get("/api/events/summary")
 def event_summary() -> dict[str, Any]:
     con = get_connection()
     try:
-        total = int(con.execute("SELECT COUNT(*) FROM event_log").fetchone()[0])
+        total_row = con.execute("SELECT COUNT(*) FROM event_log").fetchone()
+        total = int(total_row[0]) if total_row else 0
         by_status = {row[0]: int(row[1]) for row in con.execute("SELECT status_hadir, COUNT(*) FROM event_log GROUP BY status_hadir").fetchall()}
         by_course = con.execute("SELECT kode_mk, COUNT(*) total FROM event_log GROUP BY kode_mk ORDER BY total DESC").fetchdf()
         by_day = con.execute("SELECT CAST(waktu_event AS DATE) tanggal, COUNT(*) total FROM event_log GROUP BY tanggal ORDER BY tanggal").fetchdf()
@@ -336,18 +432,18 @@ def latest_events(limit: int = 10) -> dict[str, Any]:
 
 
 @app.post("/api/events/reset")
-def reset_events(payload: RoleRequest) -> dict[str, Any]:
+def reset_events(payload: RoleRequest, user: dict[str, Any] = Depends(require_admin)) -> dict[str, Any]:
     con = get_connection()
     try:
         con.execute("DELETE FROM event_log")
-        log_audit(payload.role, "RESET_EVENT_LOG", "event_log dikosongkan", "SUCCESS")
+        log_audit(actor_role(payload.role, user), "RESET_EVENT_LOG", "event_log dikosongkan", "SUCCESS")
         return {"status": "success", "message": "event_log berhasil direset"}
     finally:
         con.close()
 
 
 @app.post("/api/pipeline/run")
-def run_pipeline(payload: RoleRequest) -> dict[str, Any]:
+def run_pipeline(payload: RoleRequest, user: dict[str, Any] = Depends(require_admin)) -> dict[str, Any]:
     con = get_connection()
     logs: list[dict[str, Any]] = []
     try:
@@ -360,7 +456,7 @@ def run_pipeline(payload: RoleRequest) -> dict[str, Any]:
                 insert_df_replace(con, PIPELINE_SPECS[file_name]["table"], df)
             logs.append(result)
         overall = "success" if all(log["status"] in {"SUCCESS", "WARNING"} for log in logs) else "failed"
-        log_audit(payload.role, "RUN_PIPELINE", f"Pipeline 6 CSV selesai dengan status {overall}", "SUCCESS" if overall == "success" else "FAILED", {"logs": logs})
+        log_audit(actor_role(payload.role, user), "RUN_PIPELINE", f"Pipeline 6 CSV selesai dengan status {overall}", "SUCCESS" if overall == "success" else "FAILED", {"logs": logs})
         return {"status": overall, "message": "Pipeline selesai diproses", "logs": logs}
     finally:
         con.close()
@@ -400,7 +496,7 @@ def chunk_document(text: str, max_words: int = 90) -> list[str]:
 
 
 @app.post("/api/rag/build")
-def build_rag(payload: RoleRequest) -> dict[str, Any]:
+def build_rag(payload: RoleRequest, user: dict[str, Any] = Depends(require_admin)) -> dict[str, Any]:
     if not DOCS_DIR.exists():
         raise HTTPException(status_code=404, detail="Folder docs belum ada")
     files = sorted(DOCS_DIR.glob("*.txt"))
@@ -421,14 +517,14 @@ def build_rag(payload: RoleRequest) -> dict[str, Any]:
                     [new_id("CHK"), path.name, chunk, str(path.relative_to(PROJECT_ROOT)), len(chunk.split()), datetime.now()],
                 )
                 count += 1
-        log_audit(payload.role, "BUILD_RAG_INDEX", f"{count} document_chunks dibuat", "SUCCESS")
+        log_audit(actor_role(payload.role, user), "BUILD_RAG_INDEX", f"{count} document_chunks dibuat", "SUCCESS")
         return {"status": "success", "chunks": count, "message": f"{count} chunk dokumen berhasil dibuat"}
     finally:
         con.close()
 
 
 @app.post("/api/rag/search")
-def rag_search(payload: RAGSearchRequest) -> dict[str, Any]:
+def rag_search(payload: RAGSearchRequest, user: dict[str, Any] = Depends(get_current_user)) -> dict[str, Any]:
     query = clean_text(payload.query).lower()
     query_terms = [t for t in re.findall(r"[a-zA-Z0-9_\-]+", query) if len(t) > 1]
     if not query_terms:
@@ -438,18 +534,46 @@ def rag_search(payload: RAGSearchRequest) -> dict[str, Any]:
         df = con.execute("SELECT document_name, chunk_text, source, token_count FROM document_chunks").fetchdf()
         if df.empty:
             raise HTTPException(status_code=400, detail="Index dokumen belum dibuat. Klik Build RAG Index terlebih dahulu.")
+        
+        # TF-IDF implementation
+        N = len(df)
+        df_docs = df["chunk_text"].apply(lambda x: clean_text(x).lower().split())
+        idf = {}
+        for term in query_terms:
+            df_count = sum(1 for doc in df_docs if term in doc)
+            idf[term] = math.log((N + 1) / (df_count + 1)) + 1
+            
         rows = []
-        for _, row in df.iterrows():
-            text = clean_text(row["chunk_text"]).lower()
-            score = sum(text.count(term) for term in query_terms)
+        for i, row in enumerate(df.itertuples(index=False)):
+            doc = df_docs.iloc[i]
+            if not doc:
+                continue
+            doc_len = len(doc)
+            score = 0.0
+            term_counts = Counter(doc)
+            for term in query_terms:
+                tf = term_counts[term] / doc_len
+                score += tf * idf[term]
             if score > 0:
-                rows.append({"document_name": row["document_name"], "chunk_text": row["chunk_text"], "source": row["source"], "token_count": int(row["token_count"]), "score": int(score)})
+                rows.append(
+                    {
+                        "document_name": str(row.document_name),
+                        "chunk_text": str(row.chunk_text),
+                        "source": str(row.source),
+                        "token_count": 0,
+                        "score": float(score),
+                    }
+                )
+        
         rows = sorted(rows, key=lambda r: r["score"], reverse=True)[:payload.limit]
         if not rows:
             answer = "Informasi tidak ditemukan dalam dokumen akademik yang tersedia."
         else:
-            answer = f"Ditemukan {len(rows)} potongan dokumen relevan. Sumber utama: {rows[0]['document_name']}. Ringkasan: {rows[0]['chunk_text'][:320]}..."
-        log_audit(payload.role, "RAG_SEARCH", f"Query: {payload.query}; hasil: {len(rows)}", "SUCCESS")
+            top = rows[0]
+            top_document_name = str(top.get("document_name", "dokumen"))
+            top_chunk_text = str(top.get("chunk_text", ""))
+            answer = f"Ditemukan {len(rows)} potongan dokumen relevan. Sumber utama: {top_document_name}. Ringkasan: {top_chunk_text[:320]}..."
+        log_audit(actor_role(payload.role, user), "RAG_SEARCH", f"Query: {payload.query}; hasil: {len(rows)}", "SUCCESS")
         return {"answer": answer, "results": rows}
     finally:
         con.close()
@@ -488,7 +612,7 @@ def export_audit_log() -> FileResponse:
 
 
 @app.post("/api/backup/create")
-def create_backup(payload: RoleRequest) -> dict[str, Any]:
+def create_backup(payload: RoleRequest, user: dict[str, Any] = Depends(require_admin)) -> dict[str, Any]:
     if not DB_PATH.exists():
         init_database()
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -504,7 +628,7 @@ def create_backup(payload: RoleRequest) -> dict[str, Any]:
             """,
             [backup_id, backup_path.name, str(backup_path), backup_path.stat().st_size, datetime.now()],
         )
-        log_audit(payload.role, "CREATE_BACKUP", f"Backup dibuat: {backup_path.name}", "SUCCESS")
+        log_audit(actor_role(payload.role, user), "CREATE_BACKUP", f"Backup dibuat: {backup_path.name}", "SUCCESS")
         return {"status": "success", "backup_id": backup_id, "file_name": backup_path.name, "file_path": str(backup_path), "db_size_bytes": backup_path.stat().st_size}
     finally:
         con.close()

@@ -4,6 +4,8 @@ from datetime import datetime
 from pathlib import Path
 import json
 import uuid
+import time
+import threading
 from typing import Any, Iterable
 
 import duckdb
@@ -37,9 +39,20 @@ def ensure_dirs() -> None:
     BACKUPS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def get_connection(read_only: bool = False) -> duckdb.DuckDBPyConnection:
+_DB_WRITE_LOCK = threading.RLock()
+
+def get_connection(read_only: bool = False, retries: int = 8, delay: float = 0.05) -> duckdb.DuckDBPyConnection:
     ensure_dirs()
-    return duckdb.connect(str(DB_PATH), read_only=read_only)
+    last_err: Exception | None = None
+    for attempt in range(max(1, retries)):
+        try:
+            return duckdb.connect(str(DB_PATH), read_only=read_only)
+        except Exception as exc:
+            last_err = exc
+            if attempt >= retries - 1:
+                break
+            time.sleep(delay * (attempt + 1))
+    raise last_err if last_err else RuntimeError("Gagal membuka koneksi DuckDB")
 
 
 def now_iso() -> str:
@@ -51,14 +64,15 @@ def new_id(prefix: str = "ID") -> str:
 
 
 def execute(query: str, params: Iterable[Any] | None = None) -> None:
-    con = get_connection()
-    try:
-        if params is None:
-            con.execute(query)
-        else:
-            con.execute(query, list(params))
-    finally:
-        con.close()
+    with _DB_WRITE_LOCK:
+        con = get_connection()
+        try:
+            if params is None:
+                con.execute(query)
+            else:
+                con.execute(query, list(params))
+        finally:
+            con.close()
 
 
 def fetch_df(query: str, params: Iterable[Any] | None = None) -> pd.DataFrame:
@@ -114,25 +128,26 @@ def get_db_size_bytes() -> int:
 
 
 def log_audit(role: str, action: str, detail: str, status: str = "SUCCESS", meta: dict[str, Any] | None = None) -> None:
-    con = get_connection()
-    try:
-        con.execute(
-            """
-            INSERT INTO audit_log (audit_id, role, action, detail, status, meta_json, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            [
-                new_id("AUD"),
-                role or "System",
-                action,
-                detail,
-                status,
-                json.dumps(meta or {}, ensure_ascii=False),
-                datetime.now(),
-            ],
-        )
-    finally:
-        con.close()
+    with _DB_WRITE_LOCK:
+        con = get_connection()
+        try:
+            con.execute(
+                """
+                INSERT INTO audit_log (audit_id, role, action, detail, status, meta_json, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                [
+                    new_id("AUD"),
+                    role or "System",
+                    action,
+                    detail,
+                    status,
+                    json.dumps(meta or {}, ensure_ascii=False),
+                    datetime.now(),
+                ],
+            )
+        finally:
+            con.close()
 
 
 def export_table_to_csv(table_name: str, output_name: str | None = None) -> Path:

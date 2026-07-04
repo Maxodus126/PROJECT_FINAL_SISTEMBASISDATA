@@ -16,12 +16,15 @@ def get(path: str) -> dict:
         return json.loads(response.read().decode("utf-8"))
 
 
-def post(path: str, payload: dict | None = None) -> dict:
+def post(path: str, payload: dict | None = None, token: str | None = None) -> dict:
     body = json.dumps(payload or {}).encode("utf-8")
+    headers = {"Content-Type": "application/json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
     req = urllib.request.Request(
         BASE_URL + path,
         data=body,
-        headers={"Content-Type": "application/json"},
+        headers=headers,
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=30) as response:
@@ -61,17 +64,24 @@ def main() -> None:
     if not wait_for_backend():
         print("Backend tidak aktif. Pastikan START_ONE_CLICK.bat menjalankan uvicorn.")
         raise SystemExit(1)
+        
+    print("[1.5/6] Mendapatkan token admin...")
+    login_result = post("/api/auth/login", {"role": "Administrator", "username": "admin"})
+    token = login_result.get("token") if login_result else None
+    if not token:
+        print("Gagal mendapatkan token auth. Proses dihentikan.")
+        raise SystemExit(1)
 
-    safe_step("[2/6] Auto-load Event Monitor ke event_log DuckDB...", lambda: post("/api/events/load", {"batch_size": 50, "role": "Administrator"}))
-    safe_step("[3/6] Auto-run Data Pipeline 6 CSV ke DuckDB...", lambda: post("/api/pipeline/run", {"role": "Administrator"}))
-    safe_step("[4/6] Auto-build RAG Index ke document_chunks...", lambda: post("/api/rag/build", {"role": "Administrator"}))
-    safe_step("[5/6] Auto-create backup DuckDB...", lambda: post("/api/backup/create", {"role": "Administrator"}))
+    safe_step("[2/6] Auto-load Event Monitor ke event_log DuckDB...", lambda: post("/api/events/load", {"batch_size": 50, "role": "Administrator"}, token=token))
+    safe_step("[3/6] Auto-run Data Pipeline 6 CSV ke DuckDB...", lambda: post("/api/pipeline/run", {"role": "Administrator"}, token=token))
+    safe_step("[4/6] Auto-build RAG Index ke document_chunks...", lambda: post("/api/rag/build", {"role": "Administrator"}, token=token))
+    safe_step("[5/6] Auto-create backup DuckDB...", lambda: post("/api/backup/create", {"role": "Administrator"}, token=token))
     validation = safe_step("[6/6] Final validation otomatis...", lambda: get("/api/validation/final"))
 
     print("\nMembuka browser otomatis...")
     webbrowser.open(BASE_URL + "/api/db/tables")
     webbrowser.open(BASE_URL + "/api/validation/final")
-    webbrowser.open((PROJECT_ROOT / "index.html").resolve().as_uri())
+    webbrowser.open((PROJECT_ROOT / "frontend" / "index.html").resolve().as_uri())
 
     print("\nSELESAI. Database Proof, Final Validation, dan Web Portal sudah dibuka.")
     if validation:

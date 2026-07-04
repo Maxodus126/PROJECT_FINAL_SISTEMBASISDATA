@@ -1,0 +1,116 @@
+{
+  "students": [
+    {
+      "username": "24360001",
+      "password": "24360001",
+      "name": "Muhammad Sechan Auriel",
+      "role": "Mahasiswa"
+    },
+    {
+      "username": "24360002",
+      "password": "24360002",
+      "name": "Putri Nurhaliza",
+      "role": "Mahasiswa"
+    },
+    {
+      "username": "24364001",
+      "password": "24364001",
+      "name": "Dosma Silitonga",
+      "role": "Mahasiswa"
+    },
+    {
+      "username": "24360005",
+      "password": "24360005",
+      "name": "Fathurahman Al Faqih",
+      "role": "Mahasiswa"
+    },
+    {
+      "username": "24360004",
+      "password": "24360004",
+      "name": "Fadil Ardiansyah",
+      "role": "Mahasiswa"
+    },
+    {
+      "username": "24360008",
+      "password": "24360008",
+      "name": "Dito Bima Ramadhan",
+      "role": "Mahasiswa"
+    },
+    {
+      "username": "24360006",
+      "password": "24360006",
+      "name": "Nabila Latifatul Hamdah",
+      "role": "Mahasiswa"
+    },
+    {
+      "username": "24360003",
+      "password": "24360003",
+      "name": "Raffli Islami Fashya",
+      "role": "Mahasiswa"
+    },
+    {
+      "username": "24360009",
+      "password": "24360009",
+      "name": "Adriano Michael Silaen",
+      "role": "Mahasiswa"
+    },
+    {
+      "username": "24360007",
+      "password": "24360007",
+      "name": "Aflin Awaludin",
+      "role": "Mahasiswa"
+    }
+  ],
+  "lecturers": [
+    {
+      "username": "oni",
+      "password": "oni123",
+      "name": "Oni Bibin Bintoro, Ing., Dipl.-Sci., MBA, MBI.",
+      "role": "Dosen",
+      "code": "SC-DATA-001"
+    },
+    {
+      "username": "andi",
+      "password": "andi123",
+      "name": "Ir. ANDI SUPRIANTO, M.Kom.",
+      "role": "Dosen",
+      "code": "0312048801"
+    },
+    {
+      "username": "marhaeni",
+      "password": "marhaeni123",
+      "name": "MARHAENI, S.Kom., M.Kom.",
+      "role": "Dosen",
+      "code": "0320119002"
+    },
+    {
+      "username": "sumardiyono",
+      "password": "sumardiyono123",
+      "name": "B. SUMARDIYONO, ST., M.Kom.",
+      "role": "Dosen",
+      "code": "0308098803"
+    },
+    {
+      "username": "dikky",
+      "password": "dikky123",
+      "name": "Dikky Suryadi, S.Kom., M.Kom.",
+      "role": "Dosen",
+      "code": "0317059104"
+    },
+    {
+      "username": "zhuhriansyah",
+      "password": "zhuhriansyah123",
+      "name": "Moch. Zhuhriansyah Rahman, ST., MT.",
+      "role": "Dosen",
+      "code": "0307108906"
+    }
+  ],
+  "administrator": {
+    "username": "admin",
+    "password": "admin123"
+  },
+  "pimpinan": {
+    "username": "pimpinan",
+    "password": "pimpinan123"
+  }
+}

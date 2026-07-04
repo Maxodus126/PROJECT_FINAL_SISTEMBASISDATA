@@ -13,9 +13,9 @@ except ImportError:  # allow direct execution
     sys.path.append(str(Path(__file__).resolve().parent.parent))
     from backend.db import PROJECT_ROOT
 
-DATA_DIR = PROJECT_ROOT / "data"
-DOCS_DIR = PROJECT_ROOT / "docs"
-ASSETS_DIR = PROJECT_ROOT / "assets"
+DATA_DIR = PROJECT_ROOT / "data" / "csv"
+DOCS_DIR = PROJECT_ROOT / "docs" / "rag"
+ASSETS_DIR = PROJECT_ROOT / "frontend" / "assets"
 
 
 def write_csv(path: Path, rows: list[dict], overwrite: bool = False) -> None:
@@ -35,7 +35,7 @@ def write_text(path: Path, text: str, overwrite: bool = False) -> None:
 
 
 def load_students_from_json() -> list[dict]:
-    source = PROJECT_ROOT / "students.json"
+    source = PROJECT_ROOT / "data" / "json" / "students.json"
     if not source.exists():
         return []
     try:
@@ -46,7 +46,7 @@ def load_students_from_json() -> list[dict]:
 
 
 def load_courses_from_json() -> list[str]:
-    source = PROJECT_ROOT / "courses.json"
+    source = PROJECT_ROOT / "data" / "json" / "courses.json"
     if not source.exists():
         return []
     try:

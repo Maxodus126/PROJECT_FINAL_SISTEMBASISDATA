@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISTN One Portal V16 All Accounts Elite</title>
+  <meta name="description" content="ISTN One Portal V16 All Accounts Elite, portal akademik terpadu berbasis peran untuk mahasiswa, dosen, administrator, dan pimpinan." />
+  <meta name="theme-color" content="#06172e" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="aurora-bg" aria-hidden="true"></div>
+  <div class="ambient-grid" aria-hidden="true"></div>
+  <div class="noise-layer" aria-hidden="true"></div>
+  <canvas id="particleCanvas" aria-hidden="true"></canvas>
+
+  <section id="loginScreen" class="login-screen">
+    <div class="login-visual glass-panel">
+      <div class="orb orb-a"></div>
+      <div class="orb orb-b"></div>
+      <div class="orb orb-c"></div>
+      <header class="brand-line">
+        <img src="assets/istn-logo.jpg" alt="Logo ISTN" loading="eager" />
+        <div>
+          <h1>ISTN <span>One Portal</span></h1>
+          <p>SIAKAD, LMS, analytics, AI, dan governance dalam satu sistem.</p>
+        </div>
+      </header>
+      <main class="login-copy">
+        <span class="capsule pulse"><i></i> V16 ALL ACCOUNTS ELITE</span>
+        <h2>SIAKAD command system dengan UI/UX premium dan akses penuh per role.</h2>
+        <p>Desain compact, role-based access, dashboard eksekutif, CRUD master data, tugas, presensi, nilai, KRS, pesan, kalender, profil, pengaturan, RAG, audit, dan deployment readiness.</p>
+      </main>
+      <div class="campus-visual" aria-hidden="true">
+        <div class="tower tower-1"></div>
+        <div class="tower tower-2"></div>
+        <div class="tower tower-3"></div>
+        <div class="tower tower-4"></div>
+        <div class="ring-chip r-a">AI</div>
+        <div class="ring-chip r-b">RBAC</div>
+        <div class="ring-chip r-c">KRS</div>
+        <div class="campus-road"></div>
+      </div>
+      <div class="feature-grid">
+        <div><b>4 Role Aktif</b><span>Mahasiswa, Dosen, Admin, Pimpinan</span></div>
+        <div><b>Action Ready</b><span>Tugas, presensi, nilai, master data</span></div>
+        <div><b>AI Ready</b><span>Asisten akademik dan Search/RAG</span></div>
+        <div><b>Audit Safe</b><span>Log otomatis untuk aksi penting</span></div>
+      </div>
+    </div>
+
+    <form id="loginForm" class="login-card glass-panel">
+      <div class="login-badge"><img src="assets/istn-logo.jpg" alt="Logo ISTN" loading="lazy" /></div>
+      <h2>Masuk ke <span>ISTN One Portal</span></h2>
+      <p>Pilih peran. Sistem akan mengaktifkan menu dan kewenangan sesuai role.</p>
+
+      <label for="roleSelect">Peran</label>
+      <select id="roleSelect" name="roleSelect">
+        <option value="Mahasiswa">Mahasiswa</option>
+        <option value="Dosen">Dosen</option>
+        <option value="Administrator">Administrator</option>
+        <option value="Pimpinan">Pimpinan</option>
+      </select>
+
+      <label for="username">Username / NIM / NIP</label>
+      <input id="username" name="username" value="mahasiswa" autocomplete="username" />
+
+      <label for="password">Password</label>
+      <div class="password-field">
+        <input id="password" name="password" type="password" value="mhs123" autocomplete="current-password" />
+        <button type="button" data-action="toggle-password" aria-label="Lihat password">◉</button>
+      </div>
+
+      <button class="btn primary full" type="submit">Masuk ke Portal</button>
+      <div class="quick-login">
+        <button type="button" data-quick-role="Mahasiswa">Mahasiswa</button>
+        <button type="button" data-quick-role="Dosen">Dosen</button>
+        <button type="button" data-quick-role="Administrator">Admin</button>
+        <button type="button" data-quick-role="Pimpinan">Pimpinan</button>
+      </div>
+      <div class="demo-box">
+        <b>Akun lengkap:</b>
+        <span>Mahasiswa login memakai NIM/password NIM. Dosen login memakai kode akun dosen masing-masing, misalnya oni/oni123, andi/andi123, marhaeni/marhaeni123, sumardiyono/sumardiyono123, dikky/dikky123, zhuhriansyah/zhuhriansyah123. Admin: admin/admin123. Pimpinan: pimpinan/pimpinan123.</span>
+      </div>
+    </form>
+  </section>
+
+  <section id="appShell" class="app-shell hidden">
+    <aside id="sidebar" class="sidebar">
+      <button class="side-brand" data-page="dashboard">
+        <img src="assets/istn-logo.jpg" alt="Logo ISTN" loading="lazy" />
+        <span><b>ISTN <em>One Portal</em></b><small>V16 All Accounts Elite</small></span>
+      </button>
+      <button class="profile-mini" data-page="profile">
+        <span id="profileAvatar" class="avatar">AA</span>
+        <span><b id="sidebarName">Aflin Awaludin</b><small id="sidebarRole">Mahasiswa</small></span>
+      </button>
+      <nav id="navList" class="nav-list" aria-label="Menu utama"></nav>
+      <div class="system-pulse">
+        <div class="system-top"><b>System Pulse</b><span>Prototype offline</span></div>
+        <div class="pulse-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="storage-line"><span>Local sandbox</span><b>42.6%</b></div>
+        <div class="progress-track"><i style="width:42.6%"></i></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="menuToggle" class="icon-button mobile-only" aria-label="Buka menu">☰</button>
+        <button id="commandLauncher" class="command-launcher" type="button"><span>⌕</span><b>Cari fitur, mahasiswa, mata kuliah, dokumen...</b><kbd>Ctrl K</kbd></button>
+        <div class="top-actions">
+          <button class="icon-button" data-action="theme" title="Ganti tema">◐</button>
+          <button class="icon-button dot" data-page="messages" title="Pesan">✉</button>
+          <button class="icon-button dot" data-page="calendar" title="Kalender">◷</button>
+          <button class="icon-button" data-page="settings" title="Pengaturan">⚙</button>
+          <button id="topProfile" class="profile-top" data-page="profile"><span>Aflin Awaludin</span><small>Mahasiswa</small></button>
+          <button class="icon-button danger" data-action="logout" title="Keluar">⎋</button>
+        </div>
+      </header>
+      <section id="content" class="content" aria-live="polite"></section>
+    </main>
+  </section>
+
+  <dialog id="commandDialog" class="command-dialog">
+    <div class="dialog-head"><div><h2>Command Center</h2><p>Akses cepat menu, data mahasiswa, mata kuliah, dan fitur sistem.</p></div><button data-action="close-command" aria-label="Tutup">×</button></div>
+    <input id="commandInput" class="command-input" placeholder="Contoh: presensi, tambah mahasiswa, pesan, kalender, AI..." />
+    <div id="commandResults" class="command-results"></div>
+  </dialog>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card glass-panel">
+      <div class="modal-head"><div><h2 id="modalTitle">Modal</h2><p id="modalDesc">Form aksi cepat.</p></div><button data-action="close-modal">×</button></div>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Berhasil.</div>
+  
+  <!-- Modular JS scripts -->
+  <script src="js/utils/helpers.js"></script>
+  <script src="js/data/seeds.js"></script>
+  <script src="js/services/api.js"></script>
+  <script src="js/core/app.js"></script>
+  <script src="js/features/features.js"></script>
+</body>
+</html>
