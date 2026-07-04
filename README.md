@@ -11,6 +11,11 @@
   
 </div>
 
+<div align="center">
+  <h3>🔴 <a href="https://maxodus126.github.io/PROJECT_FINAL_SISTEMBASISDATA/frontend/index.html">LIVE DEMO UI (GITHUB PAGES) KLIK DI SINI</a> 🔴</h3>
+  <p><i>Catatan: Karena GitHub Pages bersifat statis, fungsi login/backend tidak berjalan di versi demo ini.</i></p>
+</div>
+
 <br/>
 
 **SC-DATA** adalah sebuah purwarupa *Super App* dan *Command System* tingkat perusahaan (Enterprise) yang dirancang untuk menjadi tulang punggung digital perguruan tinggi modern. Berbeda dengan Sistem Informasi Akademik (SIAKAD) tradisional yang berjalan lambat dan terfragmentasi, SC-DATA menggabungkan **Mesin ETL**, **Database Analitik In-Memory**, **AI Semantic Search (RAG)**, dan **Layanan Mahasiswa Terpadu** dalam satu arsitektur berkinerja tinggi (*High-Performance Architecture*).
