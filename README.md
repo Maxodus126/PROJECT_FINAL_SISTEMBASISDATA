@@ -50,23 +50,37 @@ Sistem ini menghindari penggunaan *framework* SSR (*Server-Side Rendering*) yang
 
 ```mermaid
 flowchart TD
-    subgraph TIER1 [PRESENTATION LAYER]
-        UI["Visual UI (HTML5 + CSS Glassmorphism)"]
-        Logic["Client Logic (Vanilla JavaScript)"]
+    %% Styling
+    classDef layer1 fill:#1e1e2e,stroke:#89b4fa,stroke-width:2px,color:#cdd6f4
+    classDef layer2 fill:#11111b,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4
+    classDef layer3 fill:#181825,stroke:#f9e2af,stroke-width:2px,color:#cdd6f4
+
+    subgraph TIER1 [1. TIER PRESENTASI / FRONTEND LAYER]
+        direction TB
+        UI["Visual UI (HTML5 + CSS)"]:::layer1
+        Logic["Client Logic (Vanilla JavaScript)"]:::layer1
     end
 
-    subgraph TIER2 [APPLICATION LAYER]
-        Gateway["FastAPI Gateway"]
-        Business["Business Logic & Security (RBAC)"]
+    subgraph TIER2 [2. TIER APLIKASI / LOGIC LAYER]
+        direction TB
+        Gateway["API Gateway (FastAPI)"]:::layer2
+        Business["Business Logic & AI (Pipeline, RAG)"]:::layer2
     end
 
-    subgraph TIER3 [DATA LAYER]
-        Engine[("DuckDB (In-Process OLAP)")]
-        Raw["Raw Data (CSV & TXT)"]
+    subgraph TIER3 [3. TIER DATA / STORAGE LAYER]
+        direction TB
+        Engine[("Database (DuckDB)")]:::layer3
+        Raw["Raw Data (CSV)"]:::layer3
     end
 
-    UI <-->|HTTP REST (JSON)| Gateway
-    Gateway <-->|SQL Queries| Engine
+    %% Hubungan antar Layer
+    TIER1 -->|HTTP REST JSON| TIER2
+    TIER2 -->|SQL Queries| TIER3
+
+    %% Penjelasan batas
+    style TIER1 fill:none,stroke:#89b4fa,stroke-width:2px,stroke-dasharray: 5 5
+    style TIER2 fill:none,stroke:#a6e3a1,stroke-width:2px,stroke-dasharray: 5 5
+    style TIER3 fill:none,stroke:#f9e2af,stroke-width:2px,stroke-dasharray: 5 5
 ```
 
 ---
@@ -100,6 +114,40 @@ pie title Distribusi Isu Data Mentah (ETL Rejects)
 ---
 
 ## 🚀 3. Ekosistem Fitur & Modul Utama
+
+### Peta Ekosistem Fitur (Mindmap)
+
+```mermaid
+mindmap
+  root((SC-DATA V16))
+    (1. Infrastruktur Data & AI)
+      Data Pipeline ETL
+      AI RAG Search Engine
+      Real-Time Event Monitor
+      Audit Trail & Security RBAC
+      Self-Validation System
+    (2. Layanan Akademik)
+      Dasbor KRS & SKS
+      Jadwal Kuliah Time-Block
+      Jadwal & Pengawas Ujian
+      Auto-Gen Kartu Ujian PDF
+      Auto-Gen Surat Keterangan
+    (3. Finansial & Fasilitas)
+      Tagihan SPP / UKT
+      Metode Pembayaran
+      E-Library & Jurnal
+      Stok Buku Fisik
+    (4. Akselerasi Karir)
+      Manajemen PKL / Magang
+      Tracking Skripsi
+      Bursa Beasiswa
+      Tracer Study Alumni
+    (5. Ekosistem Sosial)
+      Forum Diskusi Kuliah
+      Helpdesk & Ticketing
+      Pusat Notifikasi
+      Profil UKM & Organisasi
+```
 
 SC-DATA merangkum **Siklus Hidup Mahasiswa 360 Derajat**, dibagi ke dalam 5 pilar fungsional:
 
