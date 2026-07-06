@@ -5,10 +5,13 @@ import time
 import urllib.error
 import urllib.request
 import webbrowser
+import sys
+import subprocess
 from pathlib import Path
 
 BASE_URL = "http://127.0.0.1:8000"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+backend_process = None
 
 
 def get(path: str) -> dict:
@@ -31,9 +34,24 @@ def post(path: str, payload: dict | None = None, token: str | None = None) -> di
         return json.loads(response.read().decode("utf-8"))
 
 
-def wait_for_backend(max_seconds: int = 60) -> bool:
+def wait_for_backend(max_seconds: int = 20) -> bool:
+    global backend_process
     print("[1/6] Menunggu backend FastAPI aktif...")
     deadline = time.time() + max_seconds
+    
+    # Try first
+    try:
+        if get("/api/health"):
+            return True
+    except Exception:
+        pass
+        
+    print("      Backend belum aktif. Memulai Uvicorn secara otomatis...")
+    backend_process = subprocess.Popen(
+        [sys.executable, "-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1", "--port", "8000"],
+        cwd=str(PROJECT_ROOT)
+    )
+    
     while time.time() < deadline:
         try:
             result = get("/api/health")
@@ -62,7 +80,7 @@ def safe_step(label: str, fn):
 
 def main() -> None:
     if not wait_for_backend():
-        print("Backend tidak aktif. Pastikan START_ONE_CLICK.bat menjalankan uvicorn.")
+        print("Backend gagal dihidupkan. Proses dihentikan.")
         raise SystemExit(1)
         
     print("[1.5/6] Mendapatkan token admin...")
